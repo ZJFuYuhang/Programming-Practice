@@ -1,2 +1,2 @@
 # Programming-Practice
-leedcode
+leetcode
