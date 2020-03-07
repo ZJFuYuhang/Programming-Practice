@@ -1,0 +1,125 @@
+### 解题思路
+在push时对队列内的数据进行插入排序，排序的信息由另一个双向链表保存。（可用数组加速）
+###出现的问题
+结构体互用时忘了提前说明
+大量语法错误
+双向链表实现逻辑错误
+### 代码
+
+```cpp
+struct node_sort;
+
+struct node_queue{
+    int value;
+    node_sort* psort;
+    node_queue* next;
+};
+struct node_sort{
+    node_queue* pnode;
+    node_sort* next;
+    node_sort* pre;
+};
+class MaxQueue {
+public:
+    MaxQueue() {
+        head_sort.pnode=NULL;
+        head_sort.next=NULL;
+        head_sort.pre=NULL;
+        head_queue.value = 0;
+        head_queue.psort=NULL;
+        head_queue.next=NULL;
+        ptail=NULL;
+    }
+
+    int max_value() {
+        if(head_queue.next==NULL){
+            return -1;
+        }
+        return head_sort.next->pnode->value;
+    }
+
+    void push_back(int value) {
+        node_queue* _pnode = new node_queue;
+        node_sort* _psort = new node_sort;
+        //node init
+        _pnode->value = value;
+        _pnode->psort = _psort;
+        _pnode->next = NULL;
+
+        _psort->pnode = _pnode;
+        _psort->next = NULL;
+        _psort->pre = NULL;
+
+        if(ptail==NULL){// queue empty
+            head_queue.next = _pnode;
+            ptail = _pnode;
+
+            head_sort.next = _psort;
+        }else{//queue not empty
+            ptail->next = _pnode;
+            ptail = _pnode;
+            //insert
+            node_sort* pre = NULL;
+            node_sort* curr = head_sort.next;
+            for(curr;curr!=NULL;curr=curr->next){
+                //down
+                if(value>curr->pnode->value){
+                    break;
+                }
+                pre = curr;
+            }
+            if(pre==NULL){
+                _psort->next = curr;
+                head_sort.next->pre = _psort;
+                head_sort.next = _psort;
+            }else{
+                _psort->next = pre->next;
+                _psort->pre = pre;
+                pre->next = _psort;
+                if(curr!=NULL)
+                    curr->pre = _psort;
+            }
+        }
+    }
+
+    int pop_front() {
+        node_queue* _pnode = NULL;
+        node_sort* _psort = NULL;
+        int value = 0;
+        if(head_queue.next==NULL){
+            return -1;
+        }
+        _pnode = head_queue.next;
+        value = _pnode->value;
+        _psort = _pnode->psort;
+        if(head_queue.next==ptail){
+             delete _pnode;
+             _pnode = NULL;
+             delete _psort;
+             _psort=NULL;
+             head_queue.next = NULL;
+             head_sort.next= NULL;
+             ptail = NULL;
+             return value;
+        }
+        head_queue.next = _pnode->next;
+        delete _pnode;
+         _pnode = NULL;
+        if(_psort->pre==NULL){
+            head_sort.next=_psort->next;
+            _psort->next->pre = NULL;
+        }else if(_psort->next==NULL){
+            _psort->pre->next = _psort->next;
+        }else{
+            _psort->pre->next = _psort->next;
+            _psort->next->pre = _psort->pre;
+        }
+        delete _psort;
+        _psort = NULL;
+        return value;
+    }
+    private:
+        node_sort head_sort;
+        node_queue* ptail;
+        node_queue head_queue;
+};
