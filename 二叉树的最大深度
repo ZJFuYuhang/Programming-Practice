@@ -1,0 +1,64 @@
+### 解题思路
+BFS非递归解法，数组模拟队列
+###遇到问题
+就是耗内存，
+速度也不够快
+没用stl
+###他人思路
+应该用DFS递归，简洁明了。
+### 代码
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+#define NUM 50000
+class Solution {
+public:
+    Solution(){
+        head=-1;
+        tail=-1;
+    }
+    int maxDepth(TreeNode* root) {
+        int depth=0;
+        if(root==NULL){
+            return depth;
+        }
+        head=0;
+        tail=0;
+        level[head%NUM]=1;
+        queue[head%NUM]=root;
+        while(head<=tail){
+            //pop
+            if(level[head%NUM]>depth){
+                depth = level[head%NUM];
+            }
+            if(queue[head%NUM]->left!=NULL){
+                //push
+                tail++;
+                queue[tail%NUM]=queue[head%NUM]->left;
+                level[tail%NUM]=level[head%NUM]+1;
+            }
+            if(queue[head%NUM]->right!=NULL){
+                //push
+                tail++;
+                queue[tail%NUM]=queue[head%NUM]->right;
+                level[tail%NUM]=level[head%NUM]+1;
+            }
+            head++;
+        }
+        return depth;
+    }
+private:
+    int level[NUM];
+    TreeNode* queue[NUM];
+    int head;
+    int tail;
+};
+```
