@@ -1,0 +1,163 @@
+### 解题思路
+此处撰写解题思路
+以0为界考虑局部最大子序列乘积（若0存在则在最后也要将其加入比较）
+那么只要考虑无0的情况：
+若负数出现的数量为偶，那么该局部最大为所有数相乘
+若为奇数，那么该局部最大只可能是在第一个数到最后一个负数乘积或者第一个负数到最后一个数的乘积。
+### 引用他人说法
+当负数个数为偶数时候, 全部相乘一定最大
+当负数个数为奇数时候, 它的左右两边的负数个数一定为偶数, 只需求两边最大值
+当有0情况,重置就可以了
+首先，如果数组中没有0的话，那么拥有最大乘积的子数组一定以原数组的第一个元素开始（前缀数组）或者以原数组的最后一个元素结尾（后缀数组）。所以，我们分别计算前缀乘积数组和后缀乘积数组，也就是思路三中最终的数组nums和reverse_nums，然后返回两个数组中的最大值即可。
+为什么这样呢？:
+假如说，我们有一个子数组A[i : j](i != 0, j != n) 并且子数组内的元素乘积为p。以P>0为例：如果 A[i] > 0 或A[j] > 0，那么很明显，我们应该扩展这个子数组来包含A[i] 或 A[j]；如果A[i] 和A[j]都是负数，那么应该扩展这个子数组包含A[i] 和A[j]来获得更大的乘积。重复这个过程，我们最终会到达原数组的开始或结尾。
+如果原数组中有0怎么办？我们只需要把数组分割。也就是说，如果前缀数组乘积为0，我们重新从当前元素开始计算前缀乘积即可。这也就是为什么nums[i] *= nums[i - 1] or 1
+### 出现的问题
+vector容器使用不熟练
+思路用代码实现比较费力
+根本不用想太多，直接上马DP。找该问题的本质而提出的解法只适用简单问题，代码还写得让人看不懂的。
+代码水平差，时空效果不佳
+### 他人思路
+DPDPDP重要的事情说三遍
+### 代码
+
+```cpp
+class Solution
+{
+public:
+    int maxProduct(vector<int>& nums)
+    {
+        int imax=nums.at(0);
+        bool flag = false;
+        int isize = nums.size();
+
+        int ibegin=0;
+        int iend=-1;
+        int first_neg= -1;
+        int last_neg = -1;
+        int num_neg = 0;
+
+        int max_part = 1;
+        for(int index = 0; index<isize; index++)
+        {
+            if(nums.at(index)<0)
+            {
+                num_neg++;
+                if(num_neg==1)
+                {
+                    first_neg = last_neg = index;
+                }
+                else
+                {
+                    last_neg = index;
+                }
+            }
+            if(nums.at(index)==0)
+            {
+                flag = true;
+                iend = index-1;
+                if(ibegin<=iend)
+                {
+                    max_part = 1;
+                    if(num_neg%2==0)
+                    {
+                        for(int i=ibegin; i<=iend; i++)
+                        {
+                            max_part*=nums.at(i);
+                        }
+                    }
+                    else
+                    {
+                        if(ibegin==iend)
+                        {
+                            max_part = nums.at(ibegin);
+                        }
+                        else
+                        {
+                            int max_part1 = 1;
+                            int max_part2 = 1;
+                            if(ibegin<=last_neg-1)
+                            {
+                                for(int i=ibegin; i<=last_neg-1; i++)
+                                {
+                                    max_part1*=nums.at(i);
+                                }
+                            }
+                            if(first_neg+1<=iend)
+                            {
+                                for(int i=first_neg+1; i<=iend; i++)
+                                {
+                                    max_part2*=nums.at(i);
+                                }
+                            }
+                            max_part = max_part1>max_part2?max_part1:max_part2;
+                        }
+                    }
+                    if(max_part>imax)
+                    {
+                        imax = max_part;
+                    }
+
+                }
+                ibegin=index+1;
+                iend=-1;
+                first_neg= -1;
+                last_neg = -1;
+                num_neg = 0;
+            }
+        }
+        if(nums.at(isize-1)!=0)
+        {
+            iend = isize-1;
+            if(!flag)
+            {
+                ibegin = 0;
+            }
+            max_part = 1;
+            if(num_neg%2==0)
+            {
+                for(int i=ibegin; i<=iend; i++)
+                {
+                    max_part*=nums.at(i);
+                }
+            }
+            else
+            {
+                if(ibegin==iend)
+                {
+                    max_part = nums.at(ibegin);
+                }
+                else
+                {
+                    int max_part1 = 1;
+                    int max_part2 = 1;
+                    if(ibegin<=last_neg-1)
+                    {
+                        for(int i=ibegin; i<=last_neg-1; i++)
+                        {
+                            max_part1*=nums.at(i);
+                        }
+                    }
+                    if(first_neg+1<=iend)
+                    {
+                        for(int i=first_neg+1; i<=iend; i++)
+                        {
+                            max_part2*=nums.at(i);
+                        }
+                    }
+                    max_part = max_part1>max_part2?max_part1:max_part2;
+                }
+            }
+            if(max_part>imax)
+            {
+                imax = max_part;
+            }
+
+        }
+        if(imax<0&&flag)
+        {
+            imax=0;
+        }
+        return imax;
+    }
+};
