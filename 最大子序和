@@ -1,0 +1,28 @@
+### 解题思路
+此处撰写解题思路
+动态规划
+### 出现的问题
+
+### 他人思路
+分治法
+### 代码
+
+```cpp
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        //dp[i]
+        int sum = nums.at(0);
+        int rel = nums.at(0);
+        int isize = nums.size();
+        for(int i=1;i<isize;i++){
+            if(sum<0){
+                sum = nums.at(i);
+            }else{
+                sum += nums.at(i);
+            }
+            rel = rel>sum?rel:sum;
+        }
+        return rel;
+    }
+};
