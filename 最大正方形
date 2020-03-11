@@ -1,0 +1,34 @@
+### 解题思路
+此处撰写解题思路
+大正方体可以通过其小一阶正方体推导出来。用左下角的点代表整个正方体，那么其代表点的临近左上点以及左点上点可以推出其最大的正方体大小。这是可以证明的。
+原本自己的想法是通过小一阶的正方体去否定下一阶的正方体，那么就要每一阶的去遍历，其过程好像是上一行思路的逆方法，但实现很麻烦，时空效果也不好，就没写代码，下面是他人思路的C++化。
+### 出现的问题
+没考虑没有的矩阵的情况
+### 代码
+
+```cpp
+class Solution {
+public:
+    int maximalSquare(vector<vector<char>>& matrix) {
+        int r = matrix.size();
+        int c = r>0?matrix.at(0).size():0;
+        int** dp = new int*[r + 1];
+        for(int i = 0;i < r+1;i++){
+            dp[i]=new int[c+1];
+            for(int j = 0;j < c+1;j++){
+                dp[i][j]=0;
+            }
+        }
+        int maxlenth= 0;
+        for (int i = 1; i <= r; i++) {
+            for (int j = 1; j <= c; j++) {
+                if (matrix.at(i-1).at(j-1) == '1'){
+                    int tem= dp[i][j - 1]> dp[i - 1][j]?dp[i - 1][j]:dp[i][j - 1];
+                    dp[i][j] = (tem > dp[i - 1][j - 1]?dp[i - 1][j - 1]:tem)+1;
+                    maxlenth = maxlenth> dp[i][j]?maxlenth:dp[i][j];
+                }
+            }
+        }
+        return maxlenth * maxlenth;
+    }
+};
