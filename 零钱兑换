@@ -1,12 +1,15 @@
-
+### 以此为戒
+用vector做递归的栈循环优化是在是太蠢了
+### 官方思路
+记录dp table
 ### 傻了的一版代码
 class Solution {
 public:
     int coinChange(vector<int>& coins, int amount) {
-        vector<int> dp_amount;
-        vector<int> dp_num;
+        vector<int> op_amount;
+        vector<int> op_level;
+        vector<int> op_count;
         int res;
-        bool flag = false;
         int isize = coins.size();
         if(amount==0){
             return 0;
@@ -14,33 +17,33 @@ public:
         if(isize<=0){
             return 0;
         }
-        sort(coins.begin(),coins.end());
-        res = amount/coins.at(0);
-        for(int i=isize-1;i>=0;i--){
-            int maxnum=0;
-            int coin = coins.at(i);
-            int tsize = dp_amount.size();
-            for(int t=0; t<tsize; t++){
-                maxnum=(amount-dp_amount.at(t))/coin;
-                for(int j=maxnum;j>0;j--){
-                    int iamount = dp_amount.at(t)+j*coin;
-                    int inum = dp_num.at(t)+j;
-                    if(inum<=res){
-                        
-                        if(iamount == amount){
-                            flag =true;
-                            res=inum;
-                        }else{
-                            dp_amount.push_back(iamount);
-                            dp_num.push_back(inum);
-                        }
-                    }
-                }
+        sort(coins.rbegin(),coins.rend());
+        res = INT_MAX;
+        op_amount.push_back(amount);
+        op_level.push_back(0);
+        op_count.push_back(0);
+        while(!op_amount.empty()){
+            int curr_amount = op_amount.back();
+            int curr_level = op_level.back();
+            int curr_count = op_count.back();
+            op_amount.pop_back();
+            op_level.pop_back();
+            op_count.pop_back();
+            if(curr_amount == 0){
+                //cout<<res<<endl;
+                res = curr_count<res?curr_count:res;
+                continue;
             }
-            
+            if(curr_level ==isize){
+                continue;
+            }
+            int maxnum = curr_amount/coins[curr_level];
+            for(int i=0;i<=maxnum;i++){
+                op_amount.push_back(curr_amount-i*coins[curr_level]);
+                op_level.push_back(curr_level+1);
+                op_count.push_back(curr_count+i);
+            }
         }
-        if(flag)
-            return res;
-        return -1;
+        return res==INT_MAX ? -1:res;
     }
 };
