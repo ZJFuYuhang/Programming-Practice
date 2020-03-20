@@ -1,0 +1,80 @@
+### 解题思路
+此处撰写解题思路
+数组模拟栈
+用另外的栈保存最小值
+### 其它思路
+用差值保存数据，避免用辅助栈
+### 代码
+
+```cpp
+#define ROOM 10000
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    MinStack() {
+        top_min = -1;
+        top_stack = -1;
+    }
+    
+    void push(int x) {
+        if(top_stack==-1){
+            top_min = 0;
+            top_stack = 0;
+            stack[0]= x ;
+            min[0]= x ;
+            return;
+        }
+        top_stack++;
+        stack[top_stack] = x;
+        if(min[top_min]>=x){
+            top_min++;
+            min[top_min] =x;
+        }
+        return;
+    }
+    
+    void pop() {
+        if(top_stack==-1){
+            return;
+        }
+        if(top_stack==0){
+            top_stack--;
+            top_min--;
+            return;
+        }
+        if(stack[top_stack]==min[top_min]){
+            top_min--;
+        }
+        top_stack--;
+        return;
+    }
+    
+    int top() {
+        if(top_stack==-1){
+            return 0;
+        }
+        return stack[top_stack];
+    }
+    
+    int getMin() {
+        if(top_stack==-1){
+            return 0;
+        }
+        return min[top_min];
+    }
+private:
+    int stack[ROOM];
+    int min[ROOM];
+    int top_stack;
+    int top_min;
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack* obj = new MinStack();
+ * obj->push(x);
+ * obj->pop();
+ * int param_3 = obj->top();
+ * int param_4 = obj->getMin();
+ */
+```
