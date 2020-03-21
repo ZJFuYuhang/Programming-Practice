@@ -1,0 +1,39 @@
+### 解题思路
+此处撰写解题思路
+由于ASCII只有128位所以可用一个128int大小的数组来模拟哈希表。
+利用滑动窗口解决匹配问题。
+### 代码
+
+```cpp
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int isize = s.length();
+        if(isize == 0){
+            return 0;
+        }
+        max = 1;
+        head = 0;
+        tail = 0;
+        memset(ascii,0,128);
+        ascii[int(s[0])] = 1;
+        for(int index = 1;index <isize;index++){
+            if(ascii[int(s[index])]==0){
+                ascii[int(s[index])]=1;
+                max = max<(index-head+1)?(index-head+1):max;
+            }else{
+                while(s[index]!=s[head]){
+                    ascii[int(s[head])] = 0;
+                    head++;
+                }
+                head++;
+            }
+        }
+        return max;
+    }
+private:
+    int ascii[128];
+    int max;
+    int head;
+    int tail;
+};
