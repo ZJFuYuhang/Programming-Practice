@@ -1,0 +1,61 @@
+#http：//t.cn/AiCuoHKg
+#include <cstdio>
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+string Div(string str){
+    int left = 0;
+    for(int i = 0; i < str.size(); i++){
+        int curr = str[i] - '0' + left * 10;
+        str[i] = curr / 2 + '0';
+        left = curr % 2;
+    }
+    int pos = 0;
+    while(str[pos] == '0'){
+        pos++;
+    }
+    return str.substr(pos);
+}
+string Mul(string str){
+    int carry = 0;
+    int n = str.size();
+    for(int i = str.size() - 1; i >= 0; --i){
+        int curr = (int)(str[i] - '0') * 2 + carry;
+        str[i] = curr % 10 + '0';
+        carry = curr / 10;
+    }
+    if(carry != 0){
+        str = "1" + str;
+    }
+    return str;
+}
+string Add(string str, int b){
+    int carry = b;
+    for(int i = str.size() - 1; i >= 0; --i){
+        int curr = (int)(str[i] - '0') + carry;
+        str[i] = curr % 10 + '0';
+        carry = curr / 10;
+    }
+    if(carry != 0){
+        str = "1" + str;
+    }
+    return str;
+}
+int main(void){
+    string str;
+    vector<int> binary;
+    cin >> str;
+    while(str.size() != 0){
+        int last = (int)(str[str.size() - 1] - '0');
+        binary.push_back(last % 2);
+        str = Div(str);
+    }
+    for(int i = 0; i < binary.size(); i++){
+        str = Mul(str);
+        str = Add(str, binary[i]);
+    }
+    cout << str << endl;
+    return 0;
+}
